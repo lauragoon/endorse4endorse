@@ -1,2 +1,2 @@
-Requires Puppeteer and Async
-Use NPM install
+Requires puppeteer(>=1.7.0), async(>=2.6.1), and prompt(>=1.0.0)
+Use NPM install to install the needed modules

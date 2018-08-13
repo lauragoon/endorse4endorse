@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
+const prompt = require('prompt');
 
-async function run() { 
+async function run(email, password) { 
     const browser = await puppeteer.launch({headless:true});
     const page = await browser.newPage();
     await page.goto("https://linkedin.com");
@@ -8,9 +9,9 @@ async function run() {
     // Login the User, will replace the login information with terminal input soon
     await page.waitForSelector("#login-email");
     await page.click("#login-email");
-    await page.type("#login-email", "", {delay:25});
+    await page.type("#login-email", email, {delay:25});
     await page.click("#login-password");
-    await page.type("#login-password", "", {delay:25});
+    await page.type("#login-password", password, {delay:25});
     await page.click("#login-submit");
     await page.waitFor(5000);
 
@@ -101,4 +102,9 @@ async function run() {
     
 }
 
-run();
+prompt.start();
+
+// prompt the user to enter their login details for linkedin
+prompt.get(['email', 'password'], function (err, result) { 
+    run(result.email, result.password);
+});
