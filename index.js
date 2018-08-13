@@ -15,11 +15,15 @@ async function run() {
     await page.waitFor(5000);
 
     // Navigates to the Connections page
-    await page.evaluate(function() { $("div.content-container span:contains('Connections')").click(); });
+    await page.evaluate(function temp() { 
+        $("div.content-container span:contains('Connections')").click(); 
+    });
     await page.waitFor(5000);
 
     // Computes the number of connections, to be used later
-    const count = await page.evaluate(function() { return document.querySelector('.mn-connections-summary__count').innerText; });    
+    const count = await page.evaluate(function temp() { 
+        return document.querySelector('.mn-connections-summary__count').innerText; 
+    });    
     const connectionCount = await parseInt(count, 10);
     await page.evaluate(function() { $("a:contains('See all')").click(); });
     await page.waitFor(3000);    
@@ -57,7 +61,39 @@ async function run() {
 
     console.log(list);
 
+    // endorses the top three skills on a person's profile
+    // Requirments: URL must be the person's profile link
+    //              Current User must be signed into LinkedIn
+    //              User and Linked-person must be connected
+    async function endorse(URL, page) {
+        await page.goto(URL);
+        await page.waitFor(3000);
+        await page.evaluate(function temp() { 
+            document.querySelector('.pv-deferred-area--pending').scrollIntoView(); 
+        });
+        await page.waitFor(2000);
+        await page.evaluate(async function temp() {
+            function sleep(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            var endorseButtons = document.querySelectorAll('.pv-skill-categories-section__top-skills li-icon');
+            for (var i = 0; i < endorseButtons.length; i += 1) {
+                var button = endorseButtons[i];
+                if (button.getAttribute("type") == "plus-icon") {
+                    button.click();
+                    await sleep(1000);
+                }
+            }
+        });
+    }
     
+    // endorses all the people in the extracted list
+    for (var i = 0; i < list.length; i += 1) {
+        url = list[i];
+        await endorse(url, page);
+        await page.waitFor(1000); // 1 second time between each person
+    }
 
     await page.waitFor(10000);
 
